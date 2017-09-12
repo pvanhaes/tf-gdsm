@@ -1,14 +1,14 @@
 import tensorflow as tf
 
-from .unscented import Unscented
+from .nonlinear import Nonlinear
 
 
-class NNR(Unscented):
+class NNR(Nonlinear):
     """
     Neural Network Regressor
     This class defines a fully connected neural network transformation
     for the GDSM model.
-    It uses the Unscented class as basis for propagation and loss estimation.
+    It uses the Nonlinear class as basis for propagation and loss estimation.
 
     The form of the function is
     f(x) = h(x) + sigma_noise * epsilon
@@ -17,9 +17,8 @@ class NNR(Unscented):
 
     def __init__(self, input_dim, output_dim, hidden_layers=1, hidden_dim=None,
                  activation_function=tf.tanh,
-                 sigma_init=1., sigma_noise=0., trainable_noise=False,
-                 loss_samples=100, trainable=True,
-                 dtype='float64', name='NNR', **kwargs):
+                 sigma_init=1., trainable_noise=False,
+                 trainable=True, dtype='float64', name='NNR', **kwargs):
         """
         Initialises the neural network transformation object.
 
@@ -41,6 +40,9 @@ class NNR(Unscented):
                 (default True)
             trainable : Boolean indicating if the complete transformation is trainable.
                 (default True)
+            prop_samples : Number of samples to use when doing Gaussian
+                propagation. Uses the Unscented transform when 0.
+                (default 0)
             loss_samples : Number of samples to use when estimating the loss function.
                 (default 100)
             dtype : TensorFlow type used for the function's variables
@@ -81,9 +83,8 @@ class NNR(Unscented):
 
                 prev_dim = shape[1]
 
-            super().__init__(sigma_noise=sigma_noise,
-                             trainable_noise=trainable_noise and trainable,
-                             loss_samples=loss_samples, **kwargs)
+            super().__init__(trainable_noise=trainable_noise and trainable,
+                             **kwargs)
 
     def variables_to_save(self):
         """
@@ -95,7 +96,7 @@ class NNR(Unscented):
     def apply_to(self, inputs):
         """
         Implementation of the function apply_to
-        required by the Unscented class.
+        required by the Nonlinear class.
         """
 
         batch_shape = tf.shape(inputs)[:-2]

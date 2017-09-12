@@ -24,6 +24,7 @@ class NNDS(GDSM):
                  trainable_dyn_noise=False,
                  trainable_obs_noise=False,
                  trainable_obs=True,
+                 prop_samples=0,
                  loss_samples=100,
                  dtype='float64',
                  name='NNDS',
@@ -49,6 +50,9 @@ class NNDS(GDSM):
                 scale is trainable (default False)
             trainable_obs : Boolean indicating if the complete
                 observation function is trainable (default True)
+            prop_samples : Number of samples to use when doing Gaussian
+                propagation with the NNR. Uses the Unscented transform when 0.
+                (default 0)
             loss_samples : Number of samples to use when estimating
                 the cost function for the NNR (default 100)
             dtype : TensorFlow type used for the model's variables
@@ -64,7 +68,7 @@ class NNDS(GDSM):
                     sigma_init=state_scale, sigma_noise=state_noise,
                     hidden_layers=hidden_layers, hidden_dim=hidden_dim,
                     trainable_noise=trainable_dyn_noise,
-                    loss_samples=loss_samples,
+                    prop_samples=prop_samples, loss_samples=loss_samples,
                     dtype=dtype, name='TransitionFunction')
 
             # Build observation
