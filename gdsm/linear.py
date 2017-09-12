@@ -48,10 +48,10 @@ class Linear:
             self._sigma_noise2 = tf.square(self._sigma_noise)
             self._added_noise_var = tf.diag(self._sigma_noise2)
 
-            temp = tf.random_normal([self.input_dim, self.output_dim],
-                                    dtype=self._dtype)
-            temp *= sigma_init / tf.reduce_sum(temp, axis=0, keep_dims=True)
-            self._W = tf.Variable(tf.transpose(temp), trainable, name='W')
+            temp = tf.random_uniform([self.output_dim, self.input_dim],
+                                     maxval=2. * sigma_init/self.input_dim,
+                                     dtype=self._dtype)
+            self._W = tf.Variable(temp, trainable, name='W')
             self._mu = tf.Variable(
                 tf.zeros([self.output_dim, 1], dtype=self._dtype),
                 trainable, name='mu')
